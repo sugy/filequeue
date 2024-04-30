@@ -1,6 +1,7 @@
 .PHONY: setup
 setup:
 	go install golang.org/x/lint/golint@latest
+	go install honnef.co/go/tools/cmd/staticcheck@latest
 
 .PHONY: test
 test: setup
@@ -10,3 +11,4 @@ test: setup
 lint: setup
 	go vet ./...
 	golint -set_exit_status ./...
+	staticcheck ./...
