@@ -1,0 +1,18 @@
+builds:
+  - binary: file-queue
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -X github.com/sugy/file-queue/cmd.version={{.Version}}
+      - -X github.com/sugy/file-queue/cmd.commit={{.ShortCommit}}
+      - -X github.com/sugy/file-queue/cmd.date={{.Date}}
+archives:
+  - format: zip
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+release:
+  github:
+    owner: sugy
+    name: file-queue

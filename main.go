@@ -1,6 +1,5 @@
 /*
 Copyright © 2024 sugy <sugy.kz@gmail.com>
-
 */
 package main
 
