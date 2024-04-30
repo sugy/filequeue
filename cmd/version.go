@@ -1,3 +1,4 @@
+// Package cmd implements CLI applications.
 /*
 Copyright © 2024 sugy <sugy.kz@gmail.com>
 
