@@ -55,7 +55,7 @@ func UTCToJST(utc string) string {
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Show version",
-	Long:  `Show verison`,
+	Long:  `Show version`,
 	Run: func(cmd *cobra.Command, args []string) {
 		showVersion()
 	},
