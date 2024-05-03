@@ -31,7 +31,7 @@ jobs:
           git tag "$(svu p)"
           git push --tags
       - name: Setup Golang
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: stable
       - name: Run GoReleaser
