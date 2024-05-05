@@ -1,4 +1,4 @@
-module github.com/sugy/file-queue
+module github.com/sugy/filequeue
 
 go 1.22.2
 
