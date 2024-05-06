@@ -14,28 +14,28 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// Filequeue struct is...
-type Filequeue struct {
-	Dir   maildir.Dir
-	Queue string
-	Type  string
+// Queue struct is...
+type Queue struct {
+	Dir     maildir.Dir
+	Massage string
+	Type    string
 }
 
 // NewQueue is...
-func NewQueue(d string) *Filequeue {
-	f := &Filequeue{
+func NewQueue(d string) *Queue {
+	q := &Queue{
 		Dir: maildir.Dir(d),
 	}
 
-	err := f.setupQueuedir()
+	err := q.setupQueuedir()
 	if err != nil {
 		log.Fatal(err)
 	}
-	return f
+	return q
 }
 
-func (f *Filequeue) setupQueuedir() error {
-	path := string(f.Dir)
+func (q *Queue) setupQueuedir() error {
+	path := string(q.Dir)
 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
 		err := os.Mkdir(path, os.FileMode(0700))
 		if err != nil {
@@ -44,7 +44,7 @@ func (f *Filequeue) setupQueuedir() error {
 		}
 	}
 	if _, err := os.Stat(filepath.Join(path, "new")); errors.Is(err, os.ErrNotExist) {
-		err := f.Dir.Init()
+		err := q.Dir.Init()
 		if err != nil {
 			log.Fatal(err)
 			return err
@@ -55,16 +55,16 @@ func (f *Filequeue) setupQueuedir() error {
 }
 
 // Enqueue is...
-func (f *Filequeue) Enqueue(t string, q string) error {
+func (q *Queue) Enqueue(t string, m string) error {
 	log.Debug("enqueue!")
-	f.Type, f.Queue = t, q
-	log.Debug(fmt.Sprintf("Filequeue: %v", f))
+	q.Type, q.Massage = t, m
+	log.Debug(fmt.Sprintf("Queue: %v", q))
 
-	d, err := maildir.NewDelivery(string(f.Dir))
+	d, err := maildir.NewDelivery(string(q.Dir))
 	if err != nil {
 		log.Fatal(err)
 	}
-	b, err := d.Write([]byte(f.Queue))
+	b, err := d.Write([]byte(q.Massage))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -77,7 +77,7 @@ func (f *Filequeue) Enqueue(t string, q string) error {
 }
 
 // Dequeue is...
-func (f *Filequeue) Dequeue() error {
+func (q *Queue) Dequeue() error {
 	log.Debug("dequeue!")
 	return nil
 }

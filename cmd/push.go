@@ -25,23 +25,23 @@ One file is created per queue.`,
 
 		d, _ := cmd.Flags().GetString("queuedir")
 		t, _ := cmd.Flags().GetString("type")
-		q, _ := cmd.Flags().GetString("queue")
+		m, _ := cmd.Flags().GetString("message")
 
 		if len(d) == 0 {
 			d = getDefaultQueueDirPath()
 		}
 
-		if len(q) == 0 {
+		if len(m) == 0 {
 			scanner := bufio.NewScanner(os.Stdin)
 			for scanner.Scan() {
-				q = scanner.Text()
+				m = scanner.Text()
 			}
 			if err := scanner.Err(); err != nil {
 				fmt.Fprintln(os.Stderr, "reading stdin:", err)
 			}
 		}
 		f := filequeue.NewQueue(d)
-		_ = f.Enqueue(t, q)
+		_ = f.Enqueue(t, m)
 	},
 }
 
@@ -50,5 +50,5 @@ func init() {
 
 	pushCmd.Flags().StringP("queuedir", "d", "", "Queue directory.")
 	pushCmd.Flags().StringP("type", "t", "exec", "Queue type.")
-	pushCmd.Flags().StringP("queue", "q", "", "Queue strings. Usually received from stdin.")
+	pushCmd.Flags().StringP("message", "m", "", "Queue message. Usually received from stdin.")
 }
