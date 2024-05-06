@@ -6,9 +6,9 @@ builds:
       - amd64
       - arm64
     ldflags:
-      - -X github.com/sugy/file-queue/cmd.version={{.Version}}
-      - -X github.com/sugy/file-queue/cmd.commit={{.ShortCommit}}
-      - -X github.com/sugy/file-queue/cmd.date={{.Date}}
+      - -X github.com/sugy/filequeue/cmd.version={{.Version}}
+      - -X github.com/sugy/filequeue/cmd.commit={{.ShortCommit}}
+      - -X github.com/sugy/filequeue/cmd.date={{.Date}}
 archives:
   - format: zip
     name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
