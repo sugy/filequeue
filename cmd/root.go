@@ -7,6 +7,7 @@ package cmd
 import (
 	"os"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -25,6 +26,9 @@ to quickly create a Cobra application.`,
 	// Run: func(cmd *cobra.Command, args []string) { },
 }
 
+// Debug mode flag
+var Debug bool
+
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
@@ -35,13 +39,18 @@ func Execute() {
 }
 
 func init() {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
+	cobra.OnInitialize(initConfig)
+	rootCmd.PersistentFlags().BoolVarP(&Debug, "debug", "d", false, "Debug mode")
+}
 
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.filequeue.yaml)")
+func initConfig() {
+	customFmt := new(log.TextFormatter)
+	customFmt.TimestampFormat = "2006-01-02 15:04:05"
+	customFmt.FullTimestamp = true
+	log.SetFormatter(customFmt)
+	log.SetOutput(os.Stdout)
 
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	if Debug {
+		log.SetLevel(log.DebugLevel)
+	}
 }
