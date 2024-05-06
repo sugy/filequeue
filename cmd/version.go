@@ -18,8 +18,8 @@ var (
 	date    = "unknown"
 )
 
-func showVersion() {
-	fmt.Printf("version %s (rev %s, %s) [%s %s %s] \n",
+func getVersion() string {
+	return fmt.Sprintf("%s (rev %s, %s) [%s %s %s]",
 		version, commit, UTCToJST(date), runtime.GOOS, runtime.GOARCH, runtime.Version())
 }
 
@@ -39,7 +39,7 @@ var versionCmd = &cobra.Command{
 	Short: "Show version",
 	Long:  `Show version`,
 	Run: func(cmd *cobra.Command, args []string) {
-		showVersion()
+		fmt.Println("version", getVersion())
 	},
 }
 

@@ -13,8 +13,9 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "filequeue",
-	Short: "A brief description of your application",
+	Use:     "filequeue",
+	Version: getVersion(),
+	Short:   "A brief description of your application",
 	Long: `A longer description that spans multiple lines and likely contains
 examples and usage of using your application. For example:
 
@@ -41,6 +42,7 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 	rootCmd.PersistentFlags().BoolVarP(&Debug, "debug", "d", false, "Debug mode")
+	//rootCmd.SetVersionTemplate(`version {{.Version}}`)
 }
 
 func initConfig() {
