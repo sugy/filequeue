@@ -1,7 +1,6 @@
 // Package cmd implements CLI applications.
 /*
 Copyright © 2024 sugy <sugy.kz@gmail.com>
-
 */
 package cmd
 
@@ -19,11 +18,20 @@ var popCmd = &cobra.Command{
 	Long:  `Retrieve and execute stored queues.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("pop called")
-		f := filequeue.NewQueue()
+
+		d, _ := cmd.Flags().GetString("queuedir")
+
+		if len(d) == 0 {
+			d = getDefaultQueueDirPath()
+		}
+
+		f := filequeue.NewQueue(d)
 		_ = f.Dequeue()
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(popCmd)
+
+	popCmd.Flags().StringP("queuedir", "d", "", "Queue directory.")
 }

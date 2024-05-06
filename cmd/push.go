@@ -23,8 +23,13 @@ One file is created per queue.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("push called")
 
-		q, _ := cmd.Flags().GetString("queue")
+		d, _ := cmd.Flags().GetString("queuedir")
 		t, _ := cmd.Flags().GetString("type")
+		q, _ := cmd.Flags().GetString("queue")
+
+		if len(d) == 0 {
+			d = getDefaultQueueDirPath()
+		}
 
 		if len(q) == 0 {
 			scanner := bufio.NewScanner(os.Stdin)
@@ -35,7 +40,7 @@ One file is created per queue.`,
 				fmt.Fprintln(os.Stderr, "reading stdin:", err)
 			}
 		}
-		f := filequeue.NewQueue()
+		f := filequeue.NewQueue(d)
 		_ = f.Enqueue(t, q)
 	},
 }
@@ -43,6 +48,7 @@ One file is created per queue.`,
 func init() {
 	rootCmd.AddCommand(pushCmd)
 
+	pushCmd.Flags().StringP("queuedir", "d", "", "Queue directory.")
 	pushCmd.Flags().StringP("type", "t", "exec", "Queue type.")
 	pushCmd.Flags().StringP("queue", "q", "", "Queue strings. Usually received from stdin.")
 }

@@ -7,13 +7,23 @@ package filequeue
 import (
 	"fmt"
 
+	maildir "github.com/emersion/go-maildir"
 	log "github.com/sirupsen/logrus"
 )
 
 // Filequeue struct is...
 type Filequeue struct {
+	Dir   maildir.Dir
 	Queue string
 	Type  string
+}
+
+// NewQueue is...
+func NewQueue(d string) *Filequeue {
+	f := &Filequeue{
+		Dir: maildir.Dir(d),
+	}
+	return f
 }
 
 // Enqueue is...
@@ -26,9 +36,4 @@ func (f *Filequeue) Enqueue(t string, q string) error {
 func (f *Filequeue) Dequeue() error {
 	log.Debug("dequeue!")
 	return nil
-}
-
-// NewQueue is...
-func NewQueue() *Filequeue {
-	return &Filequeue{}
 }
