@@ -14,7 +14,7 @@ import (
 // pushCmd represents the push command
 var pushCmd = &cobra.Command{
 	Use:   "push",
-	Short: "push queue (enqueue)",
+	Short: "Push queue (enqueue)",
 	Long: `Save queue to one file in directory.
 One file is created per queue.`,
 	Run: func(cmd *cobra.Command, args []string) {

@@ -14,7 +14,7 @@ import (
 // popCmd represents the pop command
 var popCmd = &cobra.Command{
 	Use:   "pop",
-	Short: "pop queue (dequeue)",
+	Short: "Pop queue (dequeue)",
 	Long:  `Retrieve and execute stored queues.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("pop called")
