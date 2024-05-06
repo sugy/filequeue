@@ -41,7 +41,7 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	rootCmd.PersistentFlags().BoolVarP(&Debug, "debug", "d", false, "Debug mode")
+	rootCmd.PersistentFlags().BoolVar(&Debug, "debug", false, "Debug mode")
 	//rootCmd.SetVersionTemplate(`version {{.Version}}`)
 }
 
