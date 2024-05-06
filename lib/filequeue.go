@@ -56,7 +56,23 @@ func (f *Filequeue) setupQueuedir() error {
 
 // Enqueue is...
 func (f *Filequeue) Enqueue(t string, q string) error {
-	log.Debug(fmt.Sprintf("enqueue!: Type: %s, Queue: %s", t, q))
+	log.Debug("enqueue!")
+	f.Type, f.Queue = t, q
+	log.Debug(fmt.Sprintf("Filequeue: %v", f))
+
+	d, err := maildir.NewDelivery(string(f.Dir))
+	if err != nil {
+		log.Fatal(err)
+	}
+	b, err := d.Write([]byte(f.Queue))
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Debug(fmt.Sprintf("deliverd bytes: %v", b))
+	err = d.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
 	return nil
 }
 
