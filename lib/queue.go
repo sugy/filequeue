@@ -10,6 +10,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"slices"
 
 	maildir "github.com/emersion/go-maildir"
 	log "github.com/sirupsen/logrus"
@@ -80,14 +81,19 @@ func (q *Queue) Enqueue(t string, m string) error {
 // Dequeue is...
 func (q *Queue) Dequeue() error {
 	log.Debug("dequeue!")
-	keys, err := q.Dir.Unseen()
+	news, err := q.Dir.Unseen()
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Info(fmt.Sprintf("new keys: %v", keys))
+	log.Info(fmt.Sprintf("new keys: %v", news))
 
 	err = q.Dir.Walk(func(key string, flags []maildir.Flag) error {
-		log.Info(fmt.Sprintf("%v, %v", key, flags))
+		log.Debug(fmt.Sprintf("%v, %v", key, flags))
+
+		if !slices.Contains(news, key) {
+			return nil
+		}
+		log.Info(fmt.Sprintf("new key: %v, %v", key, flags))
 
 		rc, err := q.Dir.Open(key)
 		if err != nil {
