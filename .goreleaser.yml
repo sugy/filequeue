@@ -1,7 +1,8 @@
 builds:
-  - binary: file-queue
+  - binary: filequeue
     goos:
       - linux
+      - darwin
     goarch:
       - amd64
       - arm64
@@ -15,4 +16,4 @@ archives:
 release:
   github:
     owner: sugy
-    name: file-queue
+    name: filequeue
