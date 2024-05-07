@@ -7,6 +7,7 @@ package filequeue
 import (
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 
@@ -79,5 +80,43 @@ func (q *Queue) Enqueue(t string, m string) error {
 // Dequeue is...
 func (q *Queue) Dequeue() error {
 	log.Debug("dequeue!")
+	keys, err := q.Dir.Unseen()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Info(fmt.Sprintf("new keys: %v", keys))
+
+	err = q.Dir.Walk(func(key string, flags []maildir.Flag) error {
+		log.Info(fmt.Sprintf("%v, %v", key, flags))
+
+		rc, err := q.Dir.Open(key)
+		if err != nil {
+			log.Fatal(fmt.Sprintf("Error opening file: %v\n", err))
+			return err
+		}
+		defer rc.Close()
+
+		var fileContent string
+		buf := make([]byte, 256)
+		for {
+			n, err := rc.Read(buf)
+			if err != nil && err != io.EOF {
+				log.Fatal(fmt.Sprintf("Error reading file: %v\n", err))
+				break
+			}
+			if n == 0 {
+				break
+			}
+			fileContent += string(buf[:n])
+		}
+
+		log.Info(fmt.Sprintf("File content:\n%s\n", fileContent))
+
+		return nil
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	return nil
 }
