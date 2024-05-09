@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
+	"strings"
 
 	maildir "github.com/emersion/go-maildir"
 	log "github.com/sirupsen/logrus"
@@ -117,6 +118,14 @@ func (q *Queue) Dequeue() error {
 		}
 
 		log.Info(fmt.Sprintf("File content:\n%s\n", fileContent))
+		cmdStr := strings.Fields(fileContent)
+		c := newCommand(cmdStr[0], cmdStr[1:])
+		err = c.run()
+		if err != nil {
+			log.Fatal(err)
+			return err
+		}
+		log.Info(fmt.Sprintf("execute command. exitCode: %d, stdout: '%s', stderr: '%s'\n", c.exitCode, c.stdout, c.stderr))
 
 		return nil
 	})

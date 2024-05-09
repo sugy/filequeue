@@ -15,15 +15,25 @@ import (
 
 // command struct ...
 type command struct {
-	Path   string
-	Args   []string
-	Output string
+	path     string
+	args     []string
+	exitCode int
+	stdout   string
+	stderr   string
+}
+
+// newCommand ...
+func newCommand(path string, args []string) *command {
+	return &command{
+		path: path,
+		args: args,
+	}
 }
 
 // run executes the command and returns err
 func (c *command) run() error {
-	log.Debug(fmt.Sprintf("command: %v %v", c.Path, strings.Join(c.Args, " ")))
-	cmd := exec.Command(c.Path, c.Args...)
+	log.Debug(fmt.Sprintf("command: %v %v", c.path, strings.Join(c.args, " ")))
+	cmd := exec.Command(c.path, c.args...)
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
 	cmd.Stdout = &stdout
@@ -37,6 +47,8 @@ func (c *command) run() error {
 			exitCode, stdout.String(), stderr.String()))
 	}
 
-	c.Output = stdout.String()
+	c.exitCode = exitCode
+	c.stdout = stdout.String()
+	c.stderr = stderr.String()
 	return err
 }
