@@ -118,7 +118,7 @@ func (q *Queue) Dequeue() error {
 		}
 
 		log.Info(fmt.Sprintf("File content:\n%s\n", fileContent))
-		cmdStr := strings.Fields(fileContent)
+		cmdStr := strings.Fields(os.ExpandEnv(fileContent))
 		c := newCommand(cmdStr[0], cmdStr[1:])
 		err = c.run()
 		if err != nil {
