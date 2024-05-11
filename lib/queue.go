@@ -15,13 +15,18 @@ import (
 
 	maildir "github.com/emersion/go-maildir"
 	log "github.com/sirupsen/logrus"
+	"gopkg.in/yaml.v3"
 )
 
 // Queue struct is...
 type Queue struct {
-	Dir     maildir.Dir
-	Massage string
-	Type    string
+	Dir     maildir.Dir `yaml:"dir"`
+	Payload Payload     `yaml:"payload"`
+}
+
+type Payload struct {
+	Massage string `yaml:"message"`
+	Type    string `yaml:"type"`
 }
 
 // NewQueue is...
@@ -60,14 +65,19 @@ func (q *Queue) setupQueuedir() error {
 // Enqueue is...
 func (q *Queue) Enqueue(t string, m string) error {
 	log.Debug("enqueue!")
-	q.Type, q.Massage = t, m
+	q.Payload.Type, q.Payload.Massage = t, m
 	log.Debug(fmt.Sprintf("Queue: %v", q))
+
+	yamlBytes, err := yaml.Marshal(q)
+	if err != nil {
+		log.Fatal(fmt.Sprintf("Error marshaling to YAML: %v", err))
+	}
 
 	d, err := maildir.NewDelivery(string(q.Dir))
 	if err != nil {
 		log.Fatal(err)
 	}
-	b, err := d.Write([]byte(q.Massage))
+	b, err := d.Write(yamlBytes)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -118,7 +128,14 @@ func (q *Queue) Dequeue() error {
 		}
 
 		log.Info(fmt.Sprintf("File content:\n%s\n", fileContent))
-		cmdStr := strings.Fields(os.ExpandEnv(fileContent))
+
+		var tq Queue
+		if err := yaml.Unmarshal([]byte(fileContent), &tq); err != nil {
+			log.Fatal(fmt.Sprintf("Error Unmarshaling from YAML: %v\n", err))
+		}
+		log.Info(fmt.Sprintf("%v", tq))
+
+		cmdStr := strings.Fields(os.ExpandEnv(tq.Payload.Massage))
 		c := newCommand(cmdStr[0], cmdStr[1:])
 		err = c.run()
 		if err != nil {

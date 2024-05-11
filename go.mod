@@ -5,6 +5,7 @@ go 1.22.2
 require (
 	github.com/emersion/go-maildir v0.4.2
 	github.com/spf13/cobra v1.8.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8 // indirect
