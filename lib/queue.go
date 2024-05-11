@@ -135,13 +135,11 @@ func (f *FileQueue) Dequeue() error {
 			fileContent += string(buf[:n])
 		}
 
-		log.Info(fmt.Sprintf("File content:\n%s\n", fileContent))
-
 		var q queue
 		if err := yaml.Unmarshal([]byte(fileContent), &q); err != nil {
 			log.Fatal(fmt.Sprintf("Error Unmarshaling from YAML: %v\n", err))
 		}
-		log.Info(fmt.Sprintf("%v", q))
+		log.Debug(fmt.Sprintf("%v", q))
 		msg, err := base64.StdEncoding.DecodeString(q.Payload.Massage)
 		if err != nil {
 			log.Fatal(fmt.Sprintf("Error: base64 decoding: %v", err))
