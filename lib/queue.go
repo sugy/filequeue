@@ -5,6 +5,7 @@ Copyright © 2024 sugy <sugy.kz@gmail.com>
 package filequeue
 
 import (
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"io"
@@ -71,7 +72,8 @@ func (f *FileQueue) setupFileQueuedir() error {
 func (f *FileQueue) Enqueue(k string, m string) error {
 	log.Debug("enqueue!")
 	var q queue
-	q.Payload.Kind, q.Payload.Massage = k, m
+	q.Payload.Kind = k
+	q.Payload.Massage = base64.StdEncoding.EncodeToString([]byte(m))
 	log.Debug(fmt.Sprintf("Queue: %v", q))
 
 	yamlBytes, err := yaml.Marshal(q)
@@ -140,8 +142,13 @@ func (f *FileQueue) Dequeue() error {
 			log.Fatal(fmt.Sprintf("Error Unmarshaling from YAML: %v\n", err))
 		}
 		log.Info(fmt.Sprintf("%v", q))
+		msg, err := base64.StdEncoding.DecodeString(q.Payload.Massage)
+		if err != nil {
+			log.Fatal(fmt.Sprintf("Error: base64 decoding: %v", err))
+			return err
+		}
 
-		cmdStr := strings.Fields(os.ExpandEnv(q.Payload.Massage))
+		cmdStr := strings.Fields(os.ExpandEnv(string(msg)))
 		c := newCommand(cmdStr[0], cmdStr[1:])
 		err = c.run()
 		if err != nil {
