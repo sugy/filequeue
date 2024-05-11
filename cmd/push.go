@@ -21,8 +21,6 @@ var pushCmd = &cobra.Command{
 	Long: `Save queue to one file in directory.
 One file is created per queue.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("push called")
-
 		d, _ := cmd.Flags().GetString("queuedir")
 		t, _ := cmd.Flags().GetString("type")
 		m, _ := cmd.Flags().GetString("message")
