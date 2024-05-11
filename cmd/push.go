@@ -22,7 +22,7 @@ var pushCmd = &cobra.Command{
 One file is created per queue.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		d, _ := cmd.Flags().GetString("queuedir")
-		t, _ := cmd.Flags().GetString("type")
+		k, _ := cmd.Flags().GetString("kind")
 		m, _ := cmd.Flags().GetString("message")
 
 		if len(d) == 0 {
@@ -38,8 +38,8 @@ One file is created per queue.`,
 				fmt.Fprintln(os.Stderr, "reading stdin:", err)
 			}
 		}
-		f := filequeue.NewQueue(d)
-		_ = f.Enqueue(t, m)
+		f := filequeue.NewFileQueue(d)
+		_ = f.Enqueue(k, m)
 	},
 }
 
@@ -47,6 +47,6 @@ func init() {
 	rootCmd.AddCommand(pushCmd)
 
 	pushCmd.Flags().StringP("queuedir", "d", "", "Queue directory.")
-	pushCmd.Flags().StringP("type", "t", "exec", "Queue type.")
+	pushCmd.Flags().StringP("kind", "k", "exec", "Queue kind.")
 	pushCmd.Flags().StringP("message", "m", "", "Queue message. Usually received from stdin.")
 }

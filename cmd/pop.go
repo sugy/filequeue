@@ -21,7 +21,7 @@ var popCmd = &cobra.Command{
 			d = getDefaultQueueDirPath()
 		}
 
-		f := filequeue.NewQueue(d)
+		f := filequeue.NewFileQueue(d)
 		_ = f.Dequeue()
 	},
 }

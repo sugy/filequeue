@@ -18,32 +18,37 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Queue struct is...
-type Queue struct {
-	Dir     maildir.Dir `yaml:"dir"`
-	Payload Payload     `yaml:"payload"`
+// FileQueue struct is...
+type FileQueue struct {
+	Dir maildir.Dir
 }
 
-type Payload struct {
+// queue struct is...
+type queue struct {
+	Payload payload `yaml:"payload"`
+}
+
+// payload struct is...
+type payload struct {
 	Massage string `yaml:"message"`
-	Type    string `yaml:"type"`
+	Kind    string `yaml:"kind"`
 }
 
-// NewQueue is...
-func NewQueue(d string) *Queue {
-	q := &Queue{
+// NewFileQueue is...
+func NewFileQueue(d string) *FileQueue {
+	f := &FileQueue{
 		Dir: maildir.Dir(d),
 	}
 
-	err := q.setupQueuedir()
+	err := f.setupFileQueuedir()
 	if err != nil {
 		log.Fatal(err)
 	}
-	return q
+	return f
 }
 
-func (q *Queue) setupQueuedir() error {
-	path := string(q.Dir)
+func (f *FileQueue) setupFileQueuedir() error {
+	path := string(f.Dir)
 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
 		err := os.Mkdir(path, os.FileMode(0700))
 		if err != nil {
@@ -52,7 +57,7 @@ func (q *Queue) setupQueuedir() error {
 		}
 	}
 	if _, err := os.Stat(filepath.Join(path, "new")); errors.Is(err, os.ErrNotExist) {
-		err := q.Dir.Init()
+		err := f.Dir.Init()
 		if err != nil {
 			log.Fatal(err)
 			return err
@@ -63,9 +68,10 @@ func (q *Queue) setupQueuedir() error {
 }
 
 // Enqueue is...
-func (q *Queue) Enqueue(t string, m string) error {
+func (f *FileQueue) Enqueue(k string, m string) error {
 	log.Debug("enqueue!")
-	q.Payload.Type, q.Payload.Massage = t, m
+	var q queue
+	q.Payload.Kind, q.Payload.Massage = k, m
 	log.Debug(fmt.Sprintf("Queue: %v", q))
 
 	yamlBytes, err := yaml.Marshal(q)
@@ -73,7 +79,7 @@ func (q *Queue) Enqueue(t string, m string) error {
 		log.Fatal(fmt.Sprintf("Error marshaling to YAML: %v", err))
 	}
 
-	d, err := maildir.NewDelivery(string(q.Dir))
+	d, err := maildir.NewDelivery(string(f.Dir))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -90,15 +96,15 @@ func (q *Queue) Enqueue(t string, m string) error {
 }
 
 // Dequeue is...
-func (q *Queue) Dequeue() error {
+func (f *FileQueue) Dequeue() error {
 	log.Debug("dequeue!")
-	news, err := q.Dir.Unseen()
+	news, err := f.Dir.Unseen()
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Info(fmt.Sprintf("new keys: %v", news))
 
-	err = q.Dir.Walk(func(key string, flags []maildir.Flag) error {
+	err = f.Dir.Walk(func(key string, flags []maildir.Flag) error {
 		log.Debug(fmt.Sprintf("%v, %v", key, flags))
 
 		if !slices.Contains(news, key) {
@@ -106,7 +112,7 @@ func (q *Queue) Dequeue() error {
 		}
 		log.Info(fmt.Sprintf("new key: %v, %v", key, flags))
 
-		rc, err := q.Dir.Open(key)
+		rc, err := f.Dir.Open(key)
 		if err != nil {
 			log.Fatal(fmt.Sprintf("Error opening file: %v\n", err))
 			return err
@@ -129,13 +135,13 @@ func (q *Queue) Dequeue() error {
 
 		log.Info(fmt.Sprintf("File content:\n%s\n", fileContent))
 
-		var tq Queue
-		if err := yaml.Unmarshal([]byte(fileContent), &tq); err != nil {
+		var q queue
+		if err := yaml.Unmarshal([]byte(fileContent), &q); err != nil {
 			log.Fatal(fmt.Sprintf("Error Unmarshaling from YAML: %v\n", err))
 		}
-		log.Info(fmt.Sprintf("%v", tq))
+		log.Info(fmt.Sprintf("%v", q))
 
-		cmdStr := strings.Fields(os.ExpandEnv(tq.Payload.Massage))
+		cmdStr := strings.Fields(os.ExpandEnv(q.Payload.Massage))
 		c := newCommand(cmdStr[0], cmdStr[1:])
 		err = c.run()
 		if err != nil {
