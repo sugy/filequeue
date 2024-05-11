@@ -5,8 +5,6 @@ Copyright © 2024 sugy <sugy.kz@gmail.com>
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 	filequeue "github.com/sugy/filequeue/lib"
 )
@@ -17,15 +15,13 @@ var popCmd = &cobra.Command{
 	Short: "Pop queue (dequeue)",
 	Long:  `Retrieve and execute stored queues.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("pop called")
-
 		d, _ := cmd.Flags().GetString("queuedir")
 
 		if len(d) == 0 {
 			d = getDefaultQueueDirPath()
 		}
 
-		f := filequeue.NewQueue(d)
+		f := filequeue.NewFileQueue(d)
 		_ = f.Dequeue()
 	},
 }
