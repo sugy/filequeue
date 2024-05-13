@@ -6,7 +6,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	filequeue "github.com/sugy/filequeue/lib"
+	filequeue "github.com/sugy/filequeue/internal"
 )
 
 // popCmd represents the pop command
