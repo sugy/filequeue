@@ -13,8 +13,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// command struct ...
-type command struct {
+// execute struct ...
+type execute struct {
 	path     string
 	args     []string
 	exitCode int
@@ -22,17 +22,17 @@ type command struct {
 	stderr   string
 }
 
-// newCommand ...
-func newCommand(path string, args []string) *command {
-	return &command{
+// newExecute ...
+func newExecute(path string, args []string) *execute {
+	return &execute{
 		path: path,
 		args: args,
 	}
 }
 
 // run executes the command and returns err
-func (c *command) run() error {
-	log.Debug(fmt.Sprintf("command: %v %v", c.path, strings.Join(c.args, " ")))
+func (c *execute) run() error {
+	log.Debug(fmt.Sprintf("execute: %v %v", c.path, strings.Join(c.args, " ")))
 	cmd := exec.Command(c.path, c.args...)
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer

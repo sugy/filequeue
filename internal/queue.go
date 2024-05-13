@@ -147,13 +147,14 @@ func (f *FileQueue) Dequeue() error {
 		}
 
 		cmdStr := strings.Fields(os.ExpandEnv(string(msg)))
-		c := newCommand(cmdStr[0], cmdStr[1:])
-		err = c.run()
+		exec := newExecute(cmdStr[0], cmdStr[1:])
+		err = exec.run()
 		if err != nil {
 			log.Fatal(err)
 			return err
 		}
-		log.Info(fmt.Sprintf("execute command. exitCode: %d, stdout: '%s', stderr: '%s'\n", c.exitCode, c.stdout, c.stderr))
+		log.Info(fmt.Sprintf("execute command. exitCode: %d, stdout: '%s', stderr: '%s'\n",
+			exec.exitCode, exec.stdout, exec.stderr))
 
 		return nil
 	})

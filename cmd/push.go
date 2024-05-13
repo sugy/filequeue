@@ -11,7 +11,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	filequeue "github.com/sugy/filequeue/lib"
+	filequeue "github.com/sugy/filequeue/internal"
 )
 
 // pushCmd represents the push command
