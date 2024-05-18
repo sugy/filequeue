@@ -16,6 +16,7 @@ import (
 
 	maildir "github.com/emersion/go-maildir"
 	log "github.com/sirupsen/logrus"
+	"golang.design/x/clipboard"
 	"gopkg.in/yaml.v3"
 )
 
@@ -152,15 +153,26 @@ func (f *FileQueue) Dequeue() error {
 			return err
 		}
 
-		cmdStr := strings.Fields(os.ExpandEnv(string(msg)))
-		exec := newExecute(cmdStr[0], cmdStr[1:])
-		err = exec.run()
-		if err != nil {
-			log.Fatal(err)
-			return err
+		switch q.Payload.Kind {
+		case "exec":
+			cmdStr := strings.Fields(os.ExpandEnv(string(msg)))
+			exec := newExecute(cmdStr[0], cmdStr[1:])
+			err = exec.run()
+			if err != nil {
+				log.Fatal(err)
+				return err
+			}
+			log.Info(fmt.Sprintf("execute command. exitCode: %d, stdout: '%s', stderr: '%s'\n",
+				exec.exitCode, exec.stdout, exec.stderr))
+		case "clipboard":
+			log.Info("clipboard!")
+			err := clipboard.Init()
+			if err != nil {
+				log.Fatal(fmt.Sprintf("Error: faild to initalize clipboard package: %v", err))
+				return err
+			}
+			clipboard.Write(clipboard.FmtText, msg)
 		}
-		log.Info(fmt.Sprintf("execute command. exitCode: %d, stdout: '%s', stderr: '%s'\n",
-			exec.exitCode, exec.stdout, exec.stderr))
 
 		return nil
 	})
