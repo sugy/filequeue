@@ -71,6 +71,12 @@ func (f *FileQueue) setupFileQueuedir() error {
 // Enqueue is...
 func (f *FileQueue) Enqueue(k string, m string) error {
 	log.Debug("enqueue!")
+	if !validateKind(k) {
+		errMsg := "This string is not in the kind."
+		log.Fatal(errMsg)
+		return errors.New(errMsg)
+	}
+
 	var q queue
 	q.Payload.Kind = k
 	q.Payload.Massage = base64.StdEncoding.EncodeToString([]byte(m))
@@ -163,4 +169,14 @@ func (f *FileQueue) Dequeue() error {
 	}
 
 	return nil
+}
+
+// vilidateKind is...
+func validateKind(k string) bool {
+	switch k {
+	case "exec", "clipboard":
+		return true
+	default:
+		return false
+	}
 }
