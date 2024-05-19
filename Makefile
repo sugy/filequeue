@@ -21,3 +21,4 @@ lint: setup
 .PHONY: build
 build:
 	go build $(BUILD_FLAGS)
+	GOOS=darwin GOARCH=arm64 go build $(BUILD_FLAGS) -o filequeue_darwin_arm64
