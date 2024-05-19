@@ -20,6 +20,7 @@ type execute struct {
 	exitCode int
 	stdout   string
 	stderr   string
+	stdin    string
 }
 
 // newExecute ...
@@ -39,7 +40,25 @@ func (c *execute) run() error {
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 
-	err := cmd.Run()
+	var err error
+
+	if len(c.stdin) != 0 {
+		var stdin bytes.Buffer
+		stdin.WriteString(c.stdin)
+		cmd.Stdin = &stdin
+
+		if err = cmd.Start(); err != nil {
+			log.Fatal(err)
+			return err
+		}
+		if err = cmd.Wait(); err != nil {
+			log.Fatal(err)
+			return err
+		}
+	} else {
+		err = cmd.Run()
+	}
+
 	exitCode := cmd.ProcessState.ExitCode()
 
 	if err != nil {
