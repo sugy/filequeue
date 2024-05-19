@@ -16,7 +16,6 @@ import (
 
 	maildir "github.com/emersion/go-maildir"
 	log "github.com/sirupsen/logrus"
-	"golang.design/x/clipboard"
 	"gopkg.in/yaml.v3"
 )
 
@@ -166,12 +165,12 @@ func (f *FileQueue) Dequeue() error {
 				exec.exitCode, exec.stdout, exec.stderr))
 		case "clipboard":
 			log.Info("clipboard!")
-			err := clipboard.Init()
+			clip := newClipboard("")
+			err := clip.copy(msg)
 			if err != nil {
-				log.Fatal(fmt.Sprintf("Error: faild to initalize clipboard package: %v", err))
+				log.Fatal(err)
 				return err
 			}
-			clipboard.Write(clipboard.FmtText, msg)
 		}
 
 		return nil
