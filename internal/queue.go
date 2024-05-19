@@ -71,6 +71,12 @@ func (f *FileQueue) setupFileQueuedir() error {
 // Enqueue is...
 func (f *FileQueue) Enqueue(k string, m string) error {
 	log.Debug("enqueue!")
+	if !validateKind(k) {
+		errMsg := "This string is not in the kind."
+		log.Fatal(errMsg)
+		return errors.New(errMsg)
+	}
+
 	var q queue
 	q.Payload.Kind = k
 	q.Payload.Massage = base64.StdEncoding.EncodeToString([]byte(m))
@@ -146,15 +152,26 @@ func (f *FileQueue) Dequeue() error {
 			return err
 		}
 
-		cmdStr := strings.Fields(os.ExpandEnv(string(msg)))
-		exec := newExecute(cmdStr[0], cmdStr[1:])
-		err = exec.run()
-		if err != nil {
-			log.Fatal(err)
-			return err
+		switch q.Payload.Kind {
+		case "exec":
+			cmdStr := strings.Fields(os.ExpandEnv(string(msg)))
+			exec := newExecute(cmdStr[0], cmdStr[1:])
+			err = exec.run()
+			if err != nil {
+				log.Fatal(err)
+				return err
+			}
+			log.Info(fmt.Sprintf("execute command. exitCode: %d, stdout: '%s', stderr: '%s'\n",
+				exec.exitCode, exec.stdout, exec.stderr))
+		case "clipboard":
+			log.Info("clipboard!")
+			clip := newClipboard("")
+			err := clip.copy(msg)
+			if err != nil {
+				log.Fatal(err)
+				return err
+			}
 		}
-		log.Info(fmt.Sprintf("execute command. exitCode: %d, stdout: '%s', stderr: '%s'\n",
-			exec.exitCode, exec.stdout, exec.stderr))
 
 		return nil
 	})
@@ -163,4 +180,14 @@ func (f *FileQueue) Dequeue() error {
 	}
 
 	return nil
+}
+
+// vilidateKind is...
+func validateKind(k string) bool {
+	switch k {
+	case "exec", "clipboard":
+		return true
+	default:
+		return false
+	}
 }
