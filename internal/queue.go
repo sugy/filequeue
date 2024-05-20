@@ -112,6 +112,10 @@ func (f *FileQueue) Dequeue() error {
 	}
 	log.Info(fmt.Sprintf("new keys: %v", news))
 
+	if len(news) == 0 {
+		return nil
+	}
+
 	err = f.Dir.Walk(func(key string, flags []maildir.Flag) error {
 		log.Debug(fmt.Sprintf("%v, %v", key, flags))
 
