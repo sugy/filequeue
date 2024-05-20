@@ -112,6 +112,10 @@ func (f *FileQueue) Dequeue() error {
 	}
 	log.Info(fmt.Sprintf("new keys: %v", news))
 
+	if len(news) == 0 {
+		return nil
+	}
+
 	err = f.Dir.Walk(func(key string, flags []maildir.Flag) error {
 		log.Debug(fmt.Sprintf("%v, %v", key, flags))
 
@@ -123,7 +127,7 @@ func (f *FileQueue) Dequeue() error {
 		rc, err := f.Dir.Open(key)
 		if err != nil {
 			log.Fatal(fmt.Sprintf("Error opening file: %v\n", err))
-			return err
+			return nil
 		}
 		defer rc.Close()
 
@@ -149,27 +153,28 @@ func (f *FileQueue) Dequeue() error {
 		msg, err := base64.StdEncoding.DecodeString(q.Payload.Massage)
 		if err != nil {
 			log.Fatal(fmt.Sprintf("Error: base64 decoding: %v", err))
-			return err
+			return nil
 		}
 
 		switch q.Payload.Kind {
 		case "exec":
+			log.Debug("kind: exec")
 			cmdStr := strings.Fields(os.ExpandEnv(string(msg)))
 			exec := newExecute(cmdStr[0], cmdStr[1:])
 			err = exec.run()
 			if err != nil {
-				log.Fatal(err)
-				return err
+				log.Fatal(fmt.Sprintf("Error command execute: %v\n", err))
+				return nil
 			}
 			log.Info(fmt.Sprintf("execute command. exitCode: %d, stdout: '%s', stderr: '%s'\n",
 				exec.exitCode, exec.stdout, exec.stderr))
 		case "clipboard":
-			log.Info("clipboard!")
+			log.Debug("kind: clipboard")
 			clip := newClipboard("")
 			err := clip.copy(msg)
 			if err != nil {
-				log.Fatal(err)
-				return err
+				log.Fatal(fmt.Sprintf("Error clipboard: %v\n", err))
+				return nil
 			}
 		}
 
