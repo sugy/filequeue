@@ -187,6 +187,28 @@ func (f *FileQueue) Dequeue() error {
 	return nil
 }
 
+// Purge is...
+func (f *FileQueue) Purge() error {
+	log.Debug("purge!")
+	err := f.Dir.Walk(func(key string, flags []maildir.Flag) error {
+		log.Debug(fmt.Sprintf("%v, %v", key, flags))
+
+		err := f.Dir.Remove(key)
+		if err != nil {
+			log.Fatal(fmt.Sprintf("Error remove file: %v\n", err))
+			return err
+		}
+
+		return nil
+	})
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	return nil
+}
+
 // vilidateKind is...
 func validateKind(k string) bool {
 	switch k {
