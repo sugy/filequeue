@@ -108,13 +108,13 @@ func (f *FileQueue) Dequeue() error {
 	log.Debug("dequeue!")
 	news, err := f.Dir.Unseen()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(fmt.Sprintf("Error maildir.Dir.Unseen: %v", err))
 	}
-	log.Info(fmt.Sprintf("new keys: %v", news))
 
 	if len(news) == 0 {
 		return nil
 	}
+	log.Info(fmt.Sprintf("new keys: %v", news))
 
 	err = f.Dir.Walk(func(key string, flags []maildir.Flag) error {
 		log.Debug(fmt.Sprintf("%v, %v", key, flags))
@@ -182,6 +182,28 @@ func (f *FileQueue) Dequeue() error {
 	})
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	return nil
+}
+
+// Purge is...
+func (f *FileQueue) Purge() error {
+	log.Debug("purge!")
+	err := f.Dir.Walk(func(key string, flags []maildir.Flag) error {
+		log.Debug(fmt.Sprintf("%v, %v", key, flags))
+
+		err := f.Dir.Remove(key)
+		if err != nil {
+			log.Fatal(fmt.Sprintf("Error remove file: %v\n", err))
+			return err
+		}
+
+		return nil
+	})
+	if err != nil {
+		log.Fatal(err)
+		return err
 	}
 
 	return nil
