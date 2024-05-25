@@ -36,16 +36,16 @@ type payload struct {
 }
 
 // NewFileQueue is...
-func NewFileQueue(d string) *FileQueue {
+func NewFileQueue(d string) (*FileQueue, error) {
 	f := &FileQueue{
 		Dir: maildir.Dir(d),
 	}
 
 	err := f.setupFileQueuedir()
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
-	return f
+	return f, nil
 }
 
 func (f *FileQueue) setupFileQueuedir() error {
@@ -53,14 +53,12 @@ func (f *FileQueue) setupFileQueuedir() error {
 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
 		err := os.Mkdir(path, os.FileMode(0700))
 		if err != nil {
-			log.Fatal(err)
 			return err
 		}
 	}
 	if _, err := os.Stat(filepath.Join(path, "new")); errors.Is(err, os.ErrNotExist) {
 		err := f.Dir.Init()
 		if err != nil {
-			log.Fatal(err)
 			return err
 		}
 	}

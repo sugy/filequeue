@@ -25,9 +25,8 @@ func TestNewFileQueue(t *testing.T) {
 			}
 			defer os.RemoveAll(dir)
 
-			fq := NewFileQueue(dir)
-			if fq == nil {
-				t.Fatal("Expected non-nil FileQueue")
+			if _, err := NewFileQueue(dir); err != nil {
+				t.Fatalf("Expected no error, got %v", err)
 			}
 
 			if _, err := os.Stat(filepath.Join(dir, "new")); os.IsNotExist(err) {
@@ -57,9 +56,9 @@ func TestEnqueue(t *testing.T) {
 			}
 			defer os.RemoveAll(dir)
 
-			fq := NewFileQueue(dir)
-			if fq == nil {
-				t.Fatal("Expected non-nil FileQueue")
+			fq, err := NewFileQueue(dir)
+			if err != nil {
+				t.Fatalf("Expected no error, got %v", err)
 			}
 
 			err = fq.Enqueue(tt.kind, tt.message)
@@ -120,9 +119,9 @@ func TestDequeue(t *testing.T) {
 			}
 			defer os.RemoveAll(dir)
 
-			fq := NewFileQueue(dir)
-			if fq == nil {
-				t.Fatal("Expected non-nil FileQueue")
+			fq, err := NewFileQueue(dir)
+			if err != nil {
+				t.Fatalf("Expected no error, got %v", err)
 			}
 
 			err = fq.Enqueue(tt.kind, tt.message)
@@ -166,9 +165,9 @@ func TestPurge(t *testing.T) {
 			}
 			defer os.RemoveAll(dir)
 
-			fq := NewFileQueue(dir)
-			if fq == nil {
-				t.Fatal("Expected non-nil FileQueue")
+			fq, err := NewFileQueue(dir)
+			if err != nil {
+				t.Fatalf("Expected no error, got %v", err)
 			}
 
 			err = fq.Enqueue(tt.kind, tt.message)

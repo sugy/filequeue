@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"os"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	filequeue "github.com/sugy/filequeue/internal"
 )
@@ -38,8 +39,17 @@ One file is created per queue.`,
 				fmt.Fprintln(os.Stderr, "reading stdin:", err)
 			}
 		}
-		f := filequeue.NewFileQueue(d)
-		_ = f.Enqueue(k, m)
+
+		f, err := filequeue.NewFileQueue(d)
+		if err != nil {
+			log.Fatal(err)
+			os.Exit(1)
+		}
+
+		if err := f.Enqueue(k, m); err != nil {
+			log.Fatal(err)
+			os.Exit(2)
+		}
 	},
 }
 

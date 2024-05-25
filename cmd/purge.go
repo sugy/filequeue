@@ -5,6 +5,9 @@ Copyright © 2024 sugy <sugy.kz@gmail.com>
 package cmd
 
 import (
+	"os"
+
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	filequeue "github.com/sugy/filequeue/internal"
 )
@@ -21,8 +24,16 @@ var purgeCmd = &cobra.Command{
 			d = getDefaultQueueDirPath()
 		}
 
-		f := filequeue.NewFileQueue(d)
-		_ = f.Purge()
+		f, err := filequeue.NewFileQueue(d)
+		if err != nil {
+			log.Fatal(err)
+			os.Exit(1)
+		}
+
+		if err := f.Purge(); err != nil {
+			log.Fatal(err)
+			os.Exit(2)
+		}
 	},
 }
 
