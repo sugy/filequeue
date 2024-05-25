@@ -72,8 +72,7 @@ func (f *FileQueue) setupFileQueuedir() error {
 func (f *FileQueue) Enqueue(k string, m string) error {
 	log.Debug("enqueue!")
 	if !validateKind(k) {
-		errMsg := "This string is not in the kind."
-		log.Fatal(errMsg)
+		errMsg := "this string is not in the kind"
 		return errors.New(errMsg)
 	}
 
@@ -84,21 +83,21 @@ func (f *FileQueue) Enqueue(k string, m string) error {
 
 	yamlBytes, err := yaml.Marshal(q)
 	if err != nil {
-		log.Fatal(fmt.Sprintf("Error marshaling to YAML: %v", err))
+		return err
 	}
 
 	d, err := maildir.NewDelivery(string(f.Dir))
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	b, err := d.Write(yamlBytes)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	log.Debug(fmt.Sprintf("deliverd bytes: %v", b))
 	err = d.Close()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	return nil
 }
@@ -109,12 +108,13 @@ func (f *FileQueue) Dequeue() error {
 	news, err := f.Dir.Unseen()
 	if err != nil {
 		log.Fatal(fmt.Sprintf("Error maildir.Dir.Unseen: %v", err))
+		return err
 	}
+	log.Debug(fmt.Sprintf("new keys: %v", news))
 
 	if len(news) == 0 {
 		return nil
 	}
-	log.Info(fmt.Sprintf("new keys: %v", news))
 
 	err = f.Dir.Walk(func(key string, flags []maildir.Flag) error {
 		log.Debug(fmt.Sprintf("%v, %v", key, flags))
@@ -190,7 +190,13 @@ func (f *FileQueue) Dequeue() error {
 // Purge is...
 func (f *FileQueue) Purge() error {
 	log.Debug("purge!")
-	err := f.Dir.Walk(func(key string, flags []maildir.Flag) error {
+	_, err := f.Dir.Unseen()
+	if err != nil {
+		log.Fatal(fmt.Sprintf("Error maildir.Dir.Unseen: %v", err))
+		return err
+	}
+
+	err = f.Dir.Walk(func(key string, flags []maildir.Flag) error {
 		log.Debug(fmt.Sprintf("%v, %v", key, flags))
 
 		err := f.Dir.Remove(key)
