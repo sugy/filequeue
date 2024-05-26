@@ -146,6 +146,7 @@ func (f *FileQueue) Dequeue() error {
 		var q queue
 		if err := yaml.Unmarshal([]byte(fileContent), &q); err != nil {
 			log.Fatal(fmt.Sprintf("Error Unmarshaling from YAML: %v\n", err))
+			return nil
 		}
 		log.Debug(fmt.Sprintf("%v", q))
 		msg, err := base64.StdEncoding.DecodeString(q.Payload.Massage)

@@ -48,11 +48,9 @@ func (c *execute) run() error {
 		cmd.Stdin = &stdin
 
 		if err = cmd.Start(); err != nil {
-			log.Fatal(err)
 			return err
 		}
 		if err = cmd.Wait(); err != nil {
-			log.Fatal(err)
 			return err
 		}
 	} else {
