@@ -7,7 +7,6 @@ package filequeue
 import (
 	"bytes"
 	"fmt"
-	"os/exec"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -34,7 +33,8 @@ func newExecute(path string, args []string) *execute {
 // run executes the command and returns err
 func (c *execute) run() error {
 	log.Debug(fmt.Sprintf("execute: %v %v", c.path, strings.Join(c.args, " ")))
-	cmd := exec.Command(c.path, c.args...)
+
+	cmd := CmdExec.Command(c.path, c.args...)
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
 	cmd.Stdout = &stdout
