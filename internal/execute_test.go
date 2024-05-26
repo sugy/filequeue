@@ -88,4 +88,7 @@ func TestExecuteRun(t *testing.T) {
 			}
 		})
 	}
+
+	// Initialize the global CmdExec.
+	CmdExec = &realCommandExecutor{}
 }
