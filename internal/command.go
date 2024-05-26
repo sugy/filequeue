@@ -13,6 +13,3 @@ type realCommandExecutor struct{}
 func (r *realCommandExecutor) Command(name string, arg ...string) *exec.Cmd {
 	return exec.Command(name, arg...)
 }
-
-// CmdExec ...
-var CmdExec CommandExecutor = &realCommandExecutor{}

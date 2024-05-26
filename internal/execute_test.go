@@ -49,9 +49,6 @@ func TestExecuteRun(t *testing.T) {
 		Command("echo", "hello", "world").
 		Return(mockCommand("echo", "hello", "world"))
 
-	// Replace the global CmdExec with the mock
-	CmdExec = mockCmdExec
-
 	tests := []struct {
 		name       string
 		path       string
@@ -74,6 +71,7 @@ func TestExecuteRun(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := newExecute(tt.path, tt.args)
+			cmd.cmdExec = mockCmdExec
 			cmd.stdin = tt.stdin
 
 			err := cmd.run()
@@ -88,7 +86,4 @@ func TestExecuteRun(t *testing.T) {
 			}
 		})
 	}
-
-	// Initialize the global CmdExec.
-	CmdExec = &realCommandExecutor{}
 }
