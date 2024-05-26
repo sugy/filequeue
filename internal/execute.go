@@ -7,7 +7,6 @@ package filequeue
 import (
 	"bytes"
 	"fmt"
-	"os/exec"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -15,6 +14,7 @@ import (
 
 // execute struct ...
 type execute struct {
+	cmdExec  CommandExecutor
 	path     string
 	args     []string
 	exitCode int
@@ -26,15 +26,17 @@ type execute struct {
 // newExecute ...
 func newExecute(path string, args []string) *execute {
 	return &execute{
-		path: path,
-		args: args,
+		cmdExec: &realCommandExecutor{},
+		path:    path,
+		args:    args,
 	}
 }
 
 // run executes the command and returns err
 func (c *execute) run() error {
 	log.Debug(fmt.Sprintf("execute: %v %v", c.path, strings.Join(c.args, " ")))
-	cmd := exec.Command(c.path, c.args...)
+
+	cmd := c.cmdExec.Command(c.path, c.args...)
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
 	cmd.Stdout = &stdout
@@ -48,11 +50,9 @@ func (c *execute) run() error {
 		cmd.Stdin = &stdin
 
 		if err = cmd.Start(); err != nil {
-			log.Fatal(err)
 			return err
 		}
 		if err = cmd.Wait(); err != nil {
-			log.Fatal(err)
 			return err
 		}
 	} else {

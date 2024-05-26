@@ -19,12 +19,7 @@ func TestNewFileQueue(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			dir, err := os.MkdirTemp("", tt.dir)
-			if err != nil {
-				t.Fatal(err)
-			}
-			defer os.RemoveAll(dir)
-
+			dir := t.TempDir()
 			if _, err := NewFileQueue(dir); err != nil {
 				t.Fatalf("Expected no error, got %v", err)
 			}
@@ -50,12 +45,7 @@ func TestEnqueue(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			dir, err := os.MkdirTemp("", "filequeue_test")
-			if err != nil {
-				t.Fatal(err)
-			}
-			defer os.RemoveAll(dir)
-
+			dir := t.TempDir()
 			fq, err := NewFileQueue(dir)
 			if err != nil {
 				t.Fatalf("Expected no error, got %v", err)
@@ -113,11 +103,7 @@ func TestDequeue(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			dir, err := os.MkdirTemp("", "filequeue_test")
-			if err != nil {
-				t.Fatal(err)
-			}
-			defer os.RemoveAll(dir)
+			dir := t.TempDir()
 
 			fq, err := NewFileQueue(dir)
 			if err != nil {
@@ -159,12 +145,7 @@ func TestPurge(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			dir, err := os.MkdirTemp("", "filequeue_test")
-			if err != nil {
-				t.Fatal(err)
-			}
-			defer os.RemoveAll(dir)
-
+			dir := t.TempDir()
 			fq, err := NewFileQueue(dir)
 			if err != nil {
 				t.Fatalf("Expected no error, got %v", err)
