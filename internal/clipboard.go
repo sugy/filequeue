@@ -13,37 +13,41 @@ import (
 
 // clipboard struct ...
 type clipboard struct {
-	cmd string
+	exec *execute
 }
 
 // newClipboard ...
 func newClipboard(cmd string) *clipboard {
-
 	if len(cmd) == 0 {
-		switch runtime.GOOS {
-		case "darwin":
-			cmd = "pbcopy"
-		case "linux":
-			cmd = "cat"
-		}
+		cmd = clipboardCopyCmd(runtime.GOOS)
 	}
 
 	return &clipboard{
-		cmd: cmd,
+		exec: newExecute(cmd, []string{}),
 	}
+}
+
+// clipboardCopyCmd ...
+func clipboardCopyCmd(os string) string {
+	switch os {
+	case "darwin":
+		return "pbcopy"
+	case "linux":
+		return "cat"
+	}
+	return ""
 }
 
 // copy ...
 func (c *clipboard) copy(txt []byte) error {
-	exec := newExecute(c.cmd, []string{})
-	exec.stdin = string(txt)
-	err := exec.run()
+	c.exec.stdin = string(txt)
+	err := c.exec.run()
 	if err != nil {
 		log.Fatal(err)
 		return err
 	}
 	log.Info(fmt.Sprintf("execute command. exitCode: %d, stdout: '%s', stderr: '%s'\n",
-		exec.exitCode, exec.stdout, exec.stderr))
+		c.exec.exitCode, c.exec.stdout, c.exec.stderr))
 
 	return nil
 }
