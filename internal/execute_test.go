@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	mock_filequeue "github.com/sugy/filequeue/mock"
+	mocks "github.com/sugy/filequeue/internal/mocks"
 )
 
 // mockCommand helps to mock the exec.Command
@@ -44,7 +44,7 @@ func TestExecuteRun(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockCmdExec := mock_filequeue.NewMockCommandExecutor(ctrl)
+	mockCmdExec := mocks.NewMockCommandExecutor(ctrl)
 	mockCmdExec.EXPECT().
 		Command("echo", "hello", "world").
 		Return(mockCommand("echo", "hello", "world"))
