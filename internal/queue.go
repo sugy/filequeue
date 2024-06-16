@@ -159,6 +159,7 @@ func (f *FileQueue) Dequeue() error {
 		case "exec":
 			log.Debug("kind: exec")
 			cmdStr := strings.Fields(os.ExpandEnv(string(msg)))
+			log.Info(fmt.Sprintf("execute: %v", strings.Join(cmdStr, " ")))
 			exec := newExecute(cmdStr[0], cmdStr[1:])
 			err = exec.run()
 			if err != nil {
@@ -171,6 +172,8 @@ func (f *FileQueue) Dequeue() error {
 			log.Debug("kind: clipboard")
 			clip := newClipboard("")
 			err := clip.copy(msg)
+			log.Info(fmt.Sprintf("execute command. exitCode: %d, stdout: '%s', stderr: '%s'\n",
+				clip.exec.exitCode, clip.exec.stdout, clip.exec.stderr))
 			if err != nil {
 				log.Fatal(fmt.Sprintf("Error clipboard: %v\n", err))
 				return nil
