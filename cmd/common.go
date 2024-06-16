@@ -14,7 +14,9 @@ func getDefaultQueueDirPath() string {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "user homedir:", err)
-		return filepath.Join(os.TempDir(), "filequeue")
+		path := filepath.Join(os.TempDir(), "filequeue")
+		fmt.Fprintln(os.Stderr, "filequeue directory path:", path)
+		return path
 	}
 	return filepath.Join(home, "filequeue")
 }
