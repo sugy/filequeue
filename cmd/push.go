@@ -6,7 +6,6 @@ Copyright © 2024 sugy <sugy.kz@gmail.com>
 package cmd
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 
@@ -31,12 +30,11 @@ One file is created per queue.`,
 		}
 
 		if len(m) == 0 {
-			scanner := bufio.NewScanner(os.Stdin)
-			for scanner.Scan() {
-				m = scanner.Text()
-			}
-			if err := scanner.Err(); err != nil {
+			var err error
+			m, err = getStringFromIoReader(os.Stdin)
+			if err != nil {
 				fmt.Fprintln(os.Stderr, "reading stdin:", err)
+				os.Exit(3)
 			}
 		}
 

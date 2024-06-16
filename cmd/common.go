@@ -5,7 +5,9 @@ Copyright © 2024 sugy <sugy.kz@gmail.com>
 package cmd
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 )
@@ -19,4 +21,16 @@ func getDefaultQueueDirPath() string {
 		return path
 	}
 	return filepath.Join(home, "filequeue")
+}
+
+func getStringFromIoReader(r io.Reader) (string, error) {
+	scanner := bufio.NewScanner(r)
+	var s string
+	for scanner.Scan() {
+		s = scanner.Text()
+	}
+	if err := scanner.Err(); err != nil {
+		return "", err
+	}
+	return s, nil
 }
