@@ -17,6 +17,11 @@ func TestGetStringFromIoReader(t *testing.T) {
 			input:    "Hello, World!\n",
 			expected: "Hello, World!",
 		},
+		{
+			name:     "Valid case 2",
+			input:    "Hello, World!\nHello, World!\n",
+			expected: "Hello, World!\nHello, World!",
+		},
 	}
 
 	for _, tt := range tests {
