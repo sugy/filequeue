@@ -10,6 +10,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func getDefaultQueueDirPath() string {
@@ -25,12 +26,12 @@ func getDefaultQueueDirPath() string {
 
 func getStringFromIoReader(r io.Reader) (string, error) {
 	scanner := bufio.NewScanner(r)
-	var s string
+	var s []string
 	for scanner.Scan() {
-		s = scanner.Text()
+		s = append(s, scanner.Text())
 	}
 	if err := scanner.Err(); err != nil {
 		return "", err
 	}
-	return s, nil
+	return strings.Join(s, "\n"), nil
 }
