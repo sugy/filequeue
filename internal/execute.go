@@ -7,9 +7,6 @@ package filequeue
 import (
 	"bytes"
 	"fmt"
-	"strings"
-
-	log "github.com/sirupsen/logrus"
 )
 
 // execute struct ...
@@ -34,8 +31,6 @@ func newExecute(path string, args []string) *execute {
 
 // run executes the command and returns err
 func (c *execute) run() error {
-	log.Debug(fmt.Sprintf("execute: %v %v", c.path, strings.Join(c.args, " ")))
-
 	cmd := c.cmdExec.Command(c.path, c.args...)
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer

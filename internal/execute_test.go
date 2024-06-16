@@ -10,6 +10,54 @@ import (
 	mocks "github.com/sugy/filequeue/internal/mocks"
 )
 
+func TestExecuteRun(t *testing.T) {
+
+	tests := []struct {
+		name       string
+		path       string
+		args       []string
+		stdin      string
+		wantStdout string
+		wantStderr string
+		wantErr    bool
+	}{
+		{
+			name:       "Valid command 1",
+			path:       "echo",
+			args:       []string{"hello", "world"},
+			wantStdout: "hello world\n",
+			wantStderr: "",
+			wantErr:    false,
+		},
+		{
+			name:       "Valid command 2",
+			path:       "cat",
+			stdin:      "hello world\nhello\n",
+			wantStdout: "hello world\nhello\n",
+			wantStderr: "",
+			wantErr:    false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cmd := newExecute(tt.path, tt.args)
+			cmd.stdin = tt.stdin
+
+			err := cmd.run()
+			if (err != nil) != tt.wantErr {
+				t.Fatalf("run() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if cmd.stdout != tt.wantStdout {
+				t.Fatalf("stdout = %v, want %v", cmd.stdout, tt.wantStdout)
+			}
+			if cmd.stderr != tt.wantStderr {
+				t.Fatalf("stderr = %v, want %v", cmd.stderr, tt.wantStderr)
+			}
+		})
+	}
+}
+
 // mockCommand helps to mock the exec.Command
 func mockCommand(path string, args ...string) *exec.Cmd {
 	cs := []string{"-test.run=TestHelperProcess", "--", path}
@@ -40,7 +88,7 @@ func TestHelperProcess(t *testing.T) {
 	os.Exit(0)
 }
 
-func TestExecuteRun(t *testing.T) {
+func TestExecuteRunWithMock(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
