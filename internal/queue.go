@@ -19,6 +19,11 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// Queue is an interface for queueing operations.
+type Queue interface {
+	Dequeue() error
+}
+
 // FileQueue struct is...
 type FileQueue struct {
 	Dir maildir.Dir
