@@ -57,8 +57,8 @@ func (c *execute) run() error {
 	exitCode := cmd.ProcessState.ExitCode()
 
 	if err != nil {
-		return fmt.Errorf(fmt.Sprintf("failed to execute command. exitCode: %d, Stdout: '%s', Stderr: '%s'\n",
-			exitCode, stdout.String(), stderr.String()))
+		return fmt.Errorf("failed to execute command. exitCode: %d, Stdout: '%s', Stderr: '%s'",
+			exitCode, stdout.String(), stderr.String())
 	}
 
 	c.exitCode = exitCode

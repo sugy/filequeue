@@ -19,6 +19,11 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// Queue is an interface for queueing operations.
+type Queue interface {
+	Dequeue() error
+}
+
 // FileQueue struct is...
 type FileQueue struct {
 	Dir maildir.Dir
@@ -31,7 +36,7 @@ type queue struct {
 
 // payload struct is...
 type payload struct {
-	Massage string `yaml:"message"`
+	Message string `yaml:"message"`
 	Kind    string `yaml:"kind"`
 }
 
@@ -76,7 +81,7 @@ func (f *FileQueue) Enqueue(k string, m string) error {
 
 	var q queue
 	q.Payload.Kind = k
-	q.Payload.Massage = base64.StdEncoding.EncodeToString([]byte(m))
+	q.Payload.Message = base64.StdEncoding.EncodeToString([]byte(m))
 	log.Debug(fmt.Sprintf("Queue: %v", q))
 
 	yamlBytes, err := yaml.Marshal(q)
@@ -149,7 +154,7 @@ func (f *FileQueue) Dequeue() error {
 			return nil
 		}
 		log.Debug(fmt.Sprintf("%v", q))
-		msg, err := base64.StdEncoding.DecodeString(q.Payload.Massage)
+		msg, err := base64.StdEncoding.DecodeString(q.Payload.Message)
 		if err != nil {
 			log.Fatal(fmt.Sprintf("Error: base64 decoding: %v", err))
 			return nil

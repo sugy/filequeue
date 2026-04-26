@@ -24,6 +24,17 @@ func getDefaultQueueDirPath() string {
 	return filepath.Join(home, "filequeue")
 }
 
+func getDefaultPidFilePath() string {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		path := filepath.Join(os.TempDir(), "filequeue.pid")
+		fmt.Fprintln(os.Stderr, "user homedir:", err)
+		fmt.Fprintln(os.Stderr, "pidfile path:", path)
+		return path
+	}
+	return filepath.Join(home, ".filequeue", "filequeue.pid")
+}
+
 func getStringFromIoReader(r io.Reader) (string, error) {
 	scanner := bufio.NewScanner(r)
 	var s []string
