@@ -2,7 +2,6 @@ package filequeue
 
 import (
 	"context"
-	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -11,7 +10,6 @@ import (
 // MockQueue is a mock implementation of Queue interface for testing.
 type MockQueue struct {
 	dequeueCount int32
-	mu           sync.Mutex
 }
 
 func (m *MockQueue) Dequeue() error {
